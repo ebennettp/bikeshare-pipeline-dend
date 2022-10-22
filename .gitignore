@@ -1,0 +1,8 @@
+# Airflow configuration file for Docker
+docker-compose.yaml
+
+# Airflow logs
+logs
+
+# Python generated files
+*/__pycache__
