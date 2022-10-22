@@ -3,9 +3,9 @@
 ## Overview
 
 Runs an ELT data pipeline using Apache-Airflow to collect weather data from [meteostat](https://dev.meteostat.net/python/)
-Python API and trips data from a bike share company located in Washington, D.C., and combines both datasets into a star
-schema in Redshift to create an easy-to-use and analyze model for machine learning to make predictions on the number of
-bike share users in relation to weather. The pipeline will execute monthly and update the data in the cluster
+Python API and trips data from a bike share company located in Washington, D.C. and combines both datasets into a star
+schema in Redshift to create an easy-to-use model for machine learning to make predictions on the number of
+bike share users in relation to weather. The pipeline will execute monthly and update the data in the cluster.
 
 ---
 
@@ -86,3 +86,28 @@ building a [Star schema](https://en.wikipedia.org/wiki/Star_schema)
 - **load_data.py** extract and copy data into the tables, check with custom queries
 
 ![load_data Dag](imgs/load_data_dag.PNG)
+
+---
+
+## Write Up
+
+### Scope
+
+The project aims to automate a pipeline to fetch the necessary data from the providers, and update the tables
+accordingly. I decided to use Apache-Airflow as the scheduler to have an intuitive structure of the workflow.
+
+I used AWS S3 and Redshift to make the dataset scalable, highly available, and fast, along with their compatibility with
+Airflow. Redshift provides great performance on large data sets, access to a broad range of different SQL clients,
+and an easy way to copy data from S3.
+
+Weather data involves a much smaller dataset, which can be fetched via API and directly pushed into Redshift through
+an Airflow operator.
+
+### Addressing Other Scenarios
+
+Airflow allows us to easily build a schedule for all the tasks. Since bike share data is uploaded monthly, in case the
+pipelines would be run daily it would be essential to check the date of the last updated data, to avoid
+overwriting and only append newer data to make it more efficient.
+ 
+S3 and Redshift offer scalability and support for large amounts of clients, which makes them appropriate in case
+the amount of data and requests were increased.
