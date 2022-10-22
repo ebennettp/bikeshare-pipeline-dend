@@ -5,4 +5,4 @@ docker-compose.yaml
 logs
 
 # Python generated files
-*/__pycache__
+**/__pycache__
