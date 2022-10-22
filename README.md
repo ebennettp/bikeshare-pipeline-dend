@@ -44,8 +44,9 @@ location, in form of a pandas DataFrame, that looks as shown below:
 
 Made with python version: 3.10.1
 
-python -m pip freeze > requirements.txt
-python -m pip install -r requirements.txt
+To install required packages:
+- python -m pip freeze > requirements.txt
+- python -m pip install -r requirements.txt
 
 ### Packages
 - meteostats 1.6.5
