@@ -7,39 +7,6 @@ Python API and trips data from a bike share company located in Washington, D.C. 
 schema in Redshift to create an easy-to-use model for machine learning to make predictions on the number of
 bike share users in relation to weather. The pipeline will execute monthly and update the data in the cluster.
 
----
-
-## Data
-
-### Bike share trips
-
-[Capital Bikesahre](https://ride.capitalbikeshare.com/system-data), since the data stored in S3
-are formatted as 'zip', and Redshift is unable to process them with a 'Copy' command into Redshift. I transferred the unzipped
-files into a new S3 bucket(s3://gz-capitalbikeshare-data), which can be done via script or using [S3FileTransformOperator]
-(https://airflow.apache.org/docs/apache-airflow-providers-amazon/stable/_api/airflow/providers/amazon/aws/operators/s3/index.html),
-Note: I'm planning to add a script to the project to fully automate the pipeline.
-Files' name come in the format: YYYYMM-capitalbikeshare-tripdata.csv
-
-### Weather
-[Meteostat](https://dev.meteostat.net/python/)'s python API, which provides weather and climate data, given a time interval and
-location, in form of a pandas DataFrame, that looks as shown below:
-
-**column_name, description, type**:
-- `time` The datetime of the observation	        Datetime64
-- `temp` The air temperature in °C	                Float64
-- `dwpt` The dew point in °C	                    Float64
-- `rhum` The relative humidity in percent (%)	    Float64
-- `prcp` The one hour precipitation total in mm	    Float64
-- `snow` The snow depth in mm	                    Float64
-- `wdir` The average wind direction in degrees (°)	Float64
-- `wspd` The average wind speed in km/h	            Float64
-- `wpgt` The peak wind gust in km/h	                Float64
-- `pres` The average sea-level air pressure in hPa	Float64
-- `tsun` The one hour sunshine total in minutes (m)	Float64
-- `coco` The weather condition code	                Float64
-
----
-
 ## How to run
 
 Made with python version: 3.10.1
@@ -64,30 +31,45 @@ Once in the airflow web UI:
 - run create_tables dag and wait for the dag to finish
 - run load_data dag (this might take a long time to complete all the tasks)
 
----
+Pipeline looks as follows:
+
+![load_data Dag](imgs/load_tables_completed_dag.PNG)
 
 ## Schema
+
+The [Star schema](https://en.wikipedia.org/wiki/Star_schema) makes it easy to query and organize large amounts of data,
+aggregate it into smaller chunks and use it for business intelligence and analytics. Since the datasets don't include a
+large variety of columns and we don't need to use multiple joins, this schema is ideal for the warehouse.
  
-All data is first staged into two tables in Redshift, then, usable data is copied to different tables
-building a [Star schema](https://en.wikipedia.org/wiki/Star_schema)
+All data is first staged into two tables in Redshift; then, usable data is copied into different tables to
+build the schema structure.
 
 ![Staging tables](imgs/staging_tables.PNG)
 
 ![Schema](imgs/table_structure.PNG)
 
----
+## Data
 
-## Dags
+### Bike share trips
 
-- **create_tables.py** drop and create each table
+[Capital Bikesahre](https://ride.capitalbikeshare.com/system-data), data is stored in S3 formatted as 'zip', but Redshift is unable to process
+them with a 'Copy' command; thus, I downloaded the files, unzipped them and transferred the files into a new S3 bucket(s3://gz-capitalbikeshare-data).
+This process can be done via script or using Airflow's 
+[S3FileTransformOperator](https://airflow.apache.org/docs/apache-airflow-providers-amazon/stable/_api/airflow/providers/amazon/aws/operators/s3/index.html).
+Note: I'm planning to add the script to the project in the future to fully automate the pipeline, including unzipping the data and upload it in a
+suitable format. Files' name come in the format: YYYYMM-capitalbikeshare-tripdata.csv
 
-![create_tables Dag](imgs/create_tables_dag.PNG)
+### Weather
+[Meteostat](https://dev.meteostat.net/python/)'s python API, which provides weather and climate data, given a time interval and
+location, in form of a pandas DataFrame, that looks as shown below:
 
-- **load_data.py** extract and copy data into the tables, check with custom queries
+Raw data comes in the following format:
 
-![load_data Dag](imgs/load_data_dag.PNG)
+![stage dictionary](imgs/tables.PNG)
 
----
+And is then transform into:
+
+![data dictionary](imgs/star_dictionary.PNG)
 
 ## Write Up
 
@@ -101,7 +83,20 @@ Airflow. Redshift provides great performance on large data sets, access to a bro
 and an easy way to copy data from S3.
 
 Weather data involves a much smaller dataset, which can be fetched via API and directly pushed into Redshift through
-an Airflow operator.
+an Airflow operator. However, this may exeed Airflow's memory limit and might take a few retries before fully execute.
+
+### Sample queries
+
+As an easy example of how weather affects bike share users, when we compare the relation between `condition_code` and
+the number of rides, we can see how most rides occur in values between 2-4:
+
+![rides_vs_coco](imgs/condition_rides_join_s_time.PNG)
+
+Also, some values have a stronger influence on bike use, like temperature and wind speed. Due to the
+seasons, the temperature has a high impact on the bike share industry, as the rides decrease noticeably between 
+December and February, but there is a low deviation in the wind speed throughout the year:
+
+![wsp_temp_by_month](imgs/ride_by_month_wsp_temp.PNG)
 
 ### Addressing Other Scenarios
 
