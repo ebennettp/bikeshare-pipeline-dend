@@ -23,7 +23,7 @@ class SqlQueries:
 
 	weather_stage_table_create = ("""
 		CREATE TABLE IF NOT EXISTS public.staging_weather (
-			time timestamp,
+			"time" timestamp,
 			temp float,
 			dwpt float,
 			rhum float,
@@ -48,17 +48,15 @@ class SqlQueries:
 
 	weather_table_create = ("""
 		CREATE TABLE IF NOT EXISTS public.d_weather (
-			time 			timestamp PRIMARY KEY,
-			temp 			float,
-			humidity 		float,
-			precipitation 	float,
-			snow 			float,
-			wind_direction 	float,
-			wind_speed 		float,
-			peak_wind_gust 	float,
-			air_pressure 	float,
-			sunshine 		float,
-			condition_code 	float);
+			"time" 			timestamp PRIMARY KEY,						
+			temp 			float,						
+			humidity 		float,						
+			precipitation 	float,						
+			snow 			float,						
+			wind_direction 	float,						
+			wind_speed 		float,											
+			air_pressure 	float,											
+			condition_code 	float);						
 		""")
 
 	stations_table_create = ("""
@@ -93,7 +91,7 @@ class SqlQueries:
 	""")
 	
 	weather_table_insert = ("""
-		SELECT DISTINCT
+		SELECT
 			"time",
 			temp,
 			rhum AS humidity,
@@ -102,7 +100,6 @@ class SqlQueries:
 			wdir AS wind_direction,
 			wspd AS wind_speed,
 			pres AS air_pressure,
-			tsun AS sunshine,
 			coco AS condition_code
 		FROM staging_weather
 	""")
@@ -114,7 +111,10 @@ class SqlQueries:
 			start_lng AS station_lon,
 			end_station_name AS station_name
 		FROM staging_trips
-		WHERE station_id IS NOT NULL
+		WHERE
+			station_id IS NOT NULL AND
+			station_lat IS NOT NULL AND
+			station_lat IS NOT NULL
 	""")
 	
 	time_table_insert = ("""
