@@ -43,7 +43,7 @@ stage_trips = S3ToRedshift(
     conn_id="redshift",
     aws_credentials="aws_credentials",
     table="staging_trips",
-    s3_bucket="gz-capitalbikeshare-data",
+    s3_bucket="", # s3 bucket name
     s3_key="{year}{month}-capitalbikeshare-tripdata.csv"
 )
 
