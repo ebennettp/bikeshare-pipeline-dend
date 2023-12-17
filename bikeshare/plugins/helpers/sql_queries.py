@@ -2,9 +2,9 @@
 SQL queries used by other modules to run on the cluster
 """
 
-class SqlQueries:
 
-	trips_stage_table_create = ("""
+class SqlQueries:
+    trips_stage_table_create = """
 		CREATE TABLE IF NOT EXISTS public.staging_trips (
 			ride_id varchar,
 			rideable_type varchar,
@@ -19,9 +19,9 @@ class SqlQueries:
 			end_lat float,
 			end_lng float,
 			member_casual varchar);
-		""")
+		"""
 
-	weather_stage_table_create = ("""
+    weather_stage_table_create = """
 		CREATE TABLE IF NOT EXISTS public.staging_weather (
 			"time" timestamp,
 			temp float,
@@ -35,18 +35,18 @@ class SqlQueries:
 			pres float,
 			tsun float,
 			coco float);
-		""")
+		"""
 
-	trips_table_create = ("""
+    trips_table_create = """
 		CREATE TABLE IF NOT EXISTS public.f_trips(
 			ride_id 			varchar PRIMARY KEY,
 			rideable_type 		varchar,
 			start_time 			timestamp NOT NULL,
 			station_id 			int NOT NULL,
 			member_casual 		varchar);
-	""")
+	"""
 
-	weather_table_create = ("""
+    weather_table_create = """
 		CREATE TABLE IF NOT EXISTS public.d_weather (
 			"time" 			timestamp PRIMARY KEY,						
 			temp 			float,						
@@ -57,26 +57,26 @@ class SqlQueries:
 			wind_speed 		float,											
 			air_pressure 	float,											
 			condition_code 	float);						
-		""")
+		"""
 
-	stations_table_create = ("""
+    stations_table_create = """
 		CREATE TABLE IF NOT EXISTS public.d_stations(
 			station_id			varchar PRIMARY KEY,
 			station_lat			decimal(8,6) NOT NULL,
 			station_lon			decimal(9,6) NOT NULL,
 			station_name		varchar);
-	""")
+	"""
 
-	time_table_create = ("""
+    time_table_create = """
 	    CREATE TABLE IF NOT EXISTS public.d_time(
 	    	start_time 	timestamp PRIMARY KEY,
 	    	hour 		int4,
 	    	day 		int4,
 	    	month 		varchar,
 	    	year 		int4);
-	    """)
-	
-	trips_table_insert = ("""
+	    """
+
+    trips_table_insert = """
 		SELECT DISTINCT
 			ride_id,
 			rideable_type,
@@ -88,9 +88,9 @@ class SqlQueries:
 			ride_id IS NOT NULL AND
 			start_time IS NOT NULL AND
 			station_id IS NOT NULL
-	""")
-	
-	weather_table_insert = ("""
+	"""
+
+    weather_table_insert = """
 		SELECT
 			"time",
 			temp,
@@ -102,9 +102,9 @@ class SqlQueries:
 			pres AS air_pressure,
 			coco AS condition_code
 		FROM staging_weather
-	""")
-	
-	stations_table_insert = ("""
+	"""
+
+    stations_table_insert = """
 		SELECT DISTINCT
 			start_station_id AS station_id,
 			start_lat AS station_lat,
@@ -115,10 +115,10 @@ class SqlQueries:
 			station_id IS NOT NULL AND
 			station_lat IS NOT NULL AND
 			station_lat IS NOT NULL
-	""")
-	
-	time_table_insert = ("""
+	"""
+
+    time_table_insert = """
 	    SELECT started_at AS start_time, extract(hour from start_time), extract(day from start_time), 
 	           extract(month from start_time), extract(year from start_time)
 	    FROM staging_trips
-	""")
+	"""

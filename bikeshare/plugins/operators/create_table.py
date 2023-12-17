@@ -1,5 +1,6 @@
-from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.models.baseoperator import BaseOperator
+from airflow.providers.postgres.hooks.postgres import PostgresHook
+
 
 class CreateTableOperator(BaseOperator):
     """
@@ -11,12 +12,7 @@ class CreateTableOperator(BaseOperator):
     table: table name
     """
 
-    def __init__(self,
-                 sql="",
-                 conn_id="",
-                 table="",
-                 *args, **kwargs):
-
+    def __init__(self, sql="", conn_id="", table="", *args, **kwargs):
         super(CreateTableOperator, self).__init__(*args, **kwargs)
         self.conn_id = conn_id
         self.table = table
@@ -25,7 +21,7 @@ class CreateTableOperator(BaseOperator):
     def execute(self, context):
         rds_hook = PostgresHook(postgres_conn_id=self.conn_id)
 
-        self.log.info(f'Dropping {self.table} table if exists')
+        self.log.info(f"Dropping {self.table} table if exists")
 
         rds_hook.run(f"DROP TABLE IF EXISTS {self.table}")
         rds_hook.run(self.sql)

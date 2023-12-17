@@ -1,5 +1,6 @@
-from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.models import BaseOperator
+from airflow.providers.postgres.hooks.postgres import PostgresHook
+
 
 class DataQualityOperator(BaseOperator):
     """
@@ -11,25 +12,20 @@ class DataQualityOperator(BaseOperator):
     cases: dict{'sql': str, 'answer': int} Sql and expected answer
     """
 
-    def __init__(self,
-                 conn_id="",
-                 cases=[{}],
-                 *args, **kwargs):
-
+    def __init__(self, conn_id="", cases=[{}], *args, **kwargs):
         super(DataQualityOperator, self).__init__(*args, **kwargs)
 
         self.conn_id = conn_id
         self.cases = cases
-
 
     def execute(self, context):
         rds_hook = PostgresHook(postgres_conn_id=self.conn_id)
         passed = 0
 
         for case in self.cases:
-            records = rds_hook.get_records(case['sql'])[0]
-        
-            if records[0] == case['answer']:
+            records = rds_hook.get_records(case["sql"])[0]
+
+            if records[0] == case["answer"]:
                 passed += 1
             else:
                 raise ValueError("Unexpected value during quality check")

@@ -1,5 +1,6 @@
-from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.models import BaseOperator
+from airflow.providers.postgres.hooks.postgres import PostgresHook
+
 
 class LoadTableOperator(BaseOperator):
     """
@@ -12,13 +13,7 @@ class LoadTableOperator(BaseOperator):
     truncate: (bool - false by default) Empty table before inserting new values
     """
 
-    def __init__(self,
-                 sql="",
-                 conn_id = "",
-                 table='',
-                 truncate=False,
-                 *args, **kwargs):
-
+    def __init__(self, sql="", conn_id="", table="", truncate=False, *args, **kwargs):
         super(LoadTableOperator, self).__init__(*args, **kwargs)
         self.conn_id = conn_id
         self.sql = sql
@@ -31,7 +26,7 @@ class LoadTableOperator(BaseOperator):
         if self.truncate:
             self.log.info("Emptying table before running insert query")
             rds_hook.run(f"TRUNCATE {self.table}")
-        
+
         rds_hook.run(
             f"""
             INSERT INTO {self.table}

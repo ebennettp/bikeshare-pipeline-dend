@@ -1,6 +1,7 @@
 from airflow.models import BaseOperator
-from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.amazon.aws.hooks.base_aws import AwsBaseHook
+from airflow.providers.postgres.hooks.postgres import PostgresHook
+
 
 class S3ToRedshift(BaseOperator):
     """
@@ -27,14 +28,16 @@ class S3ToRedshift(BaseOperator):
     ```
     """
 
-    def __init__(self,
-                conn_id="",
-                aws_credentials="",
-                table="",
-                s3_bucket="",
-                s3_key="",
-                *args, **kwargs):
-
+    def __init__(
+        self,
+        conn_id="",
+        aws_credentials="",
+        table="",
+        s3_bucket="",
+        s3_key="",
+        *args,
+        **kwargs,
+    ):
         super(S3ToRedshift, self).__init__(*args, **kwargs)
 
         self.conn_id = conn_id
@@ -43,17 +46,16 @@ class S3ToRedshift(BaseOperator):
         self.s3_bucket = s3_bucket
         self.s3_key = s3_key
 
-    def execute(self, context):
-
+    def execute(self, context: dict):
         aws_hook = AwsBaseHook(self.aws_credentials)
-        credentials = aws_hook.get_credentials() # get credentials from Airflow
+        credentials = aws_hook.get_credentials()  # get credentials from Airflow
 
         rds_hook = PostgresHook(postgres_conn_id=self.conn_id)
 
         # Use Airflow context var to replace year and month
         self.s3_key = self.s3_key.format(
-            year = context['data_interval_start'].year,
-            month = '%02d' % context['data_interval_start'].month
+            year=context["data_interval_start"].year,
+            month="%02d" % context["data_interval_start"].month,
         )
 
         # s3 path
