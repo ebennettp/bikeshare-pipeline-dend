@@ -21,7 +21,7 @@ Once in the airflow web UI:
 
 Pipeline looks as follows:
 
-![load_data Dag](docs/imgsload_tables_completed_dag.PNG)
+![load_data Dag](docs/imgs/load_tables_completed_dag.PNG)
 
 ## Schema
 
@@ -32,9 +32,9 @@ large variety of columns and we don't need to use multiple joins, this schema is
 All data is first staged into two tables in Redshift; then, usable data is copied into different tables to
 build the schema structure.
 
-![Staging tables](docs/imgsstaging_tables.PNG)
+![Staging tables](docs/imgs/staging_tables.PNG)
 
-![Schema](docs/imgstable_structure.PNG)
+![Schema](docs/imgs/table_structure.PNG)
 
 ## Data
 
@@ -53,11 +53,11 @@ location, in form of a pandas DataFrame, that looks as shown below:
 
 Raw data comes in the following format:
 
-![stage dictionary](docs/imgstables.PNG)
+![stage dictionary](docs/imgs/tables.PNG)
 
 And is then transform into:
 
-![data dictionary](docs/imgsstar_dictionary.PNG)
+![data dictionary](docs/imgs/star_dictionary.PNG)
 
 ## Write Up
 
@@ -78,13 +78,13 @@ an Airflow operator. However, this may exeed Airflow's memory limit and might ta
 As an easy example of how weather affects bike share users, when we compare the relation between `condition_code` and
 the number of rides, we can see how most rides occur in values between 2-4:
 
-![rides_vs_coco](docs/imgscondition_rides_join_s_time.PNG)
+![rides_vs_coco](docs/imgs/condition_rides_join_s_time.PNG)
 
 Also, some values have a stronger influence on bike use, like temperature and wind speed. Due to the
 seasons, the temperature has a high impact on the bike share industry, as the rides decrease noticeably between 
 December and February, but there is a low deviation in the wind speed throughout the year:
 
-![wsp_temp_by_month](docs/imgsride_by_month_wsp_temp.PNG)
+![wsp_temp_by_month](docs/imgs/ride_by_month_wsp_temp.PNG)
 
 ### Addressing Other Scenarios
 
